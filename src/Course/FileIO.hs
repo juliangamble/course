@@ -63,7 +63,18 @@ the contents of c
 main ::
   IO ()
 main =
-  error "todo: Course.FileIO#main"
+--  error "todo: Course.FileIO#main"
+  getArgs >>= \a -> case a of
+--                      Nil -> error "todo: no CLAs"
+--                      h :. _ -> error "todo: stuff"
+--                      Nil -> putStrLn "forgot command line arguments"
+                      h :. _ -> run h
+                      _ -> putStrLn "forgot command line arguments"
+
+--getArgs >>= \args ->
+--    case args of
+--      filename :. Nil -> run filename
+--      _ -> putStrLn "usage: runhaskell io.hs filename"
 
 type FilePath =
   Chars
@@ -72,31 +83,59 @@ type FilePath =
 run ::
   Chars
   -> IO ()
-run =
-  error "todo: Course.FileIO#run"
+--run =
+--  error "todo: Course.FileIO#run"
+--run filename =
+run a = --putStrLn a
+  --{-
+  do
+--    content <- readFile filename
+    c <- readFile a
+--    results <- getFiles (lines content)
+    fs <- getFiles (lines c)
+--    printFiles results
+    printFiles fs
+-- -}
+
+
 
 getFiles ::
   List FilePath
   -> IO (List (FilePath, Chars))
-getFiles =
-  error "todo: Course.FileIO#getFiles"
+--getFiles =
+--  error "todo: Course.FileIO#getFiles"
+--getFiles =
+getFiles fs = 
+  sequence (getFile <$> fs)
+--  sequence . (<$>) getFile
 
 getFile ::
   FilePath
   -> IO (FilePath, Chars)
-getFile =
-  error "todo: Course.FileIO#getFile"
+--getFile =
+  --error "todo: Course.FileIO#getFile"
+--  lift2 (<$>) (,) readFile
+getFile f =
+  (\c -> (f, c)) <$> readFile f
 
 printFiles ::
   List (FilePath, Chars)
   -> IO ()
 printFiles =
-  error "todo: Course.FileIO#printFiles"
+--  error "todo: Course.FileIO#printFiles"
+  void . sequence . (<$>) (uncurry printFile)
 
 printFile ::
   FilePath
   -> Chars
   -> IO ()
-printFile =
-  error "todo: Course.FileIO#printFile"
+--printFile =
+--  error "todo: Course.FileIO#printFile"
+--printFile name content =
+--  putStrLn ("============ " ++ name) >>
+--  putStrLn content
+printFile p c =
+  putStrLn ("The name of the file: " ++ p ++ "\n") *>
+  putStrLn ("the contents: " ++ c)
+
 

@@ -18,6 +18,7 @@ import qualified Prelude as P
 --
 -- * The law of composition
 --   `∀f g x.(f . g <$> x) ≅ (f <$> (g <$> x))`
+-- "all things that are 'mappable'"
 class Functor f where
   -- Pronounced, eff-map.
   (<$>) ::
@@ -41,8 +42,10 @@ instance Functor Id where
     (a -> b)
     -> Id a
     -> Id b
-  (<$>) =
-    error "todo: Course.Functor (<$>)#instance Id"
+--  (<$>) =
+--    error "todo: Course.Functor (<$>)#instance Id"
+--  (<$>) f (Id x) = Id (f x)
+  (<$>) f (Id a) = Id (f a)
 
 -- | Maps a function on the List functor.
 --
@@ -56,8 +59,13 @@ instance Functor List where
     (a -> b)
     -> List a
     -> List b
-  (<$>) =
-    error "todo: Course.Functor (<$>)#instance List"
+--  (<$>) =
+--    error "todo: Course.Functor (<$>)#instance List"
+--  (<$>) _ Nil       = Nil
+--  (<$>) f (x :. xs) = (f x) :. (<$>) f xs
+
+  _ <$> Nil= Nil
+  f <$> (h:.t) = f h :. (f <$> t)
 
 -- | Maps a function on the Optional functor.
 --
@@ -71,8 +79,12 @@ instance Functor Optional where
     (a -> b)
     -> Optional a
     -> Optional b
-  (<$>) =
-    error "todo: Course.Functor (<$>)#instance Optional"
+--  (<$>) =
+--    error "todo: Course.Functor (<$>)#instance Optional"
+  (<$>) f (Full x) = Full (f x)
+  (<$>) _ Empty    = Empty
+--  (<$>) _ _ = Empty
+--  _ (<$>) Empty = Empty
 
 -- | Maps a function on the reader ((->) t) functor.
 --
@@ -83,8 +95,11 @@ instance Functor ((->) t) where
     (a -> b)
     -> ((->) t a)
     -> ((->) t b)
-  (<$>) =
-    error "todo: Course.Functor (<$>)#((->) t)"
+  --(<$>) =
+  --  error "todo: Course.Functor (<$>)#((->) t)"
+--  (<$>) f g = f . g
+  (<$>) = (.)
+
 
 -- | Anonymous map. Maps a constant value on a functor.
 --
@@ -99,8 +114,14 @@ instance Functor ((->) t) where
   a
   -> f b
   -> f a
-(<$) =
-  error "todo: Course.Functor#(<$)"
+--(<$) =
+--  error "todo: Course.Functor#(<$)"
+(<$) x xs = (<$>) (const x) xs
+-- = (<$>) . const
+-- = (<$>) const --pointfree
+--(<$) a x = (\_ -> a) <$> x --pointful
+--(<$) =  \a x -> (\_ -> a) <$> x
+
 
 -- | Anonymous map producing unit value.
 --
@@ -119,8 +140,10 @@ void ::
   Functor f =>
   f a
   -> f ()
-void =
-  error "todo: Course.Functor#void"
+--void =
+--  error "todo: Course.Functor#void"
+--void = (<$>) (const ())
+void = (<$) ()  
 
 -----------------------
 -- SUPPORT LIBRARIES --
